@@ -1,0 +1,98 @@
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
+#include <vector>
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <cstdlib>
+#include <cstdio>
+#include <string>
+#include <cstring>
+#include <cassert>
+#include <utility>
+#include <iomanip>
+
+using namespace std;
+
+const int mod = 1e9 + 7;
+const int p = 31;
+const int MAXN = 6 * 105000; 
+
+int n, m;
+
+set < pair <long long, long long> > st[MAXN];
+long long pp1[MAXN], pp2[MAXN];
+char s[MAXN];
+
+int main() {
+	//assert(freopen("input.txt","r",stdin));
+	//assert(freopen("output.txt","w",stdout));
+
+	scanf("%d %d\n", &n, &m);
+
+	pp1[0] = 1; pp2[0] = 1;
+    for (int i = 1; i < MAXN; i++) {
+        pp1[i] = pp1[i - 1] * p;
+        pp2[i] = (pp2[i - 1] * p) % mod; 
+    }
+
+	for (int i = 1; i <= n; i++) {
+		gets(s);
+		int len = strlen(s);
+
+		long long h1 = s[0] - 'a' + 1;
+		long long h2 = s[0] - 'a' + 1;
+		for (int i = 1; i < len; i++) {
+       		 h1 = h1 + pp1[i] * (s[i] - 'a' + 1);
+       		 h2 = (h2 + pp2[i] * (s[i] - 'a' + 1)) % mod; 
+    	}
+
+    	st[len].insert( make_pair(h1, h2) );
+	}
+
+	
+	for (int i = 1; i <= m; i++) {
+		bool res = false;
+
+		gets(s);
+		int len = strlen(s);
+
+		long long h1 = s[0] - 'a' + 1;
+		long long h2 = s[0] - 'a' + 1;
+		for (int i = 1; i < len; i++) {
+       		 h1 = h1 + pp1[i] * (s[i] - 'a' + 1);
+       		 h2 = (h2 + pp2[i] * (s[i] - 'a' + 1)) % mod; 
+    	}
+
+    	for (int i = 0; i < len && !res; i++) {
+    		for (char c = 'a'; c <= 'c'; c++) {
+    			if (s[i] == c)
+    				continue;
+				long long ht1, ht2;
+				ht1 = h1 - (s[i] - 'a' + 1) * pp1[i];
+				ht1 += (c - 'a' + 1) * pp1[i];
+
+
+				ht2 = (h2 - (s[i] - 'a' + 1) * pp2[i] + mod) % mod;
+				while (ht2 < 0)
+					ht2 += mod;
+				ht2 = (ht2 + (c - 'a' + 1) * pp2[i]) % mod;
+
+				if (st[len].count(make_pair(ht1, ht2))) {
+					res = true;
+					break;
+				}
+    		}
+    	}
+
+    	if (res)
+    		puts("YES");
+		else
+			puts("NO");
+	}
+
+	return 0;
+}

@@ -1,0 +1,90 @@
+using namespace std;
+
+#define filename "improvements"
+
+const int MAXN = 2 * 105000;
+const int INF = (int) 1e9;
+
+int n;
+int a[MAXN], p[MAXN];
+int up[MAXN], down[MAXN];
+int tree[4 * MAXN];
+int num;
+
+int getmax(int l, int r) {
+	l = num + l - 1; r = num + r - 1;
+	int res = 0;
+	while (l <= r) {
+		if (l & 1) {
+			if (tree[l] > res)
+				res = tree[l];
+			l++;
+		}
+		if (r % 2 == 0) {
+			if (tree[r] > res)
+				res = tree[r];
+			r--;
+		}
+		l /= 2; r /= 2;
+	}
+	return res;
+}
+
+void update(int pos, int val) {
+	pos = num + pos - 1;
+	tree[pos] = val;
+	pos /= 2;
+	while (pos >= 1) {
+		tree[pos] = max(tree[pos * 2], tree[pos * 2 + 1]);
+		pos /= 2;
+	}
+}
+
+int main() { 
+	assert(freopen(filename ".in", "r", stdin));
+	assert(freopen(filename ".out", "w", stdout));
+
+	scanf("%d", &n);
+
+	for (int i = 1; i <= n; i++) {
+		scanf("%d", &a[i]);
+		p[a[i]] = i;
+	}
+	
+	/*for (int i = 1; i <= n; i++)
+		printf("%d ", p[i]);
+	cout << endl; */
+
+
+	num = 1;
+	while (num <= n)
+		num *= 2;	
+
+	for (int i = 1; i < 2 * num; i++)
+		tree[i] = 0;
+
+	for (int i = 1; i      <= n; i++) {
+		int cur = p[i];
+		int curans = 1 + getmax(1, cur - 1);
+		up[i] = max(up[i - 1], curans);
+		update(cur, curans);
+	}
+
+	memset(tree, 0, sizeof(tree));
+
+	for (int i = n; i >= 1; i--) {
+		int cur = p[i];
+		int curans = 1 + getmax(1, cur - 1);
+		down[i] = max(down[i + 1], curans);
+		update(cur, curans);
+	}
+
+	int ans = min(up[n], down[1]);
+	for (int i = 1; i < n; i++) {
+		ans = max(ans, up[i] + down[i + 1]);		
+	}
+
+	cout << ans << endl;
+
+	return 0;
+}

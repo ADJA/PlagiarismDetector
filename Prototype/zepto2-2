@@ -1,0 +1,74 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+#include <set>
+
+
+using namespace std;
+
+const int N = (int)6e5 + 100;
+
+const int mod = (int)1e9 + 7;
+
+int n, m;
+const int p = 3;
+set<long long> H;
+set<long long> Hmod;
+char a[] = {'a', 'b', 'c'};
+long long p3[N];
+long long p3mod[N];
+string s;
+
+int main() {
+	p3[0] = 1;
+	p3mod[0] = 1;
+	for (int i = 1 ; i < N ; i ++) {
+		p3[i] = p3[i-1] * 3;
+		p3mod[i] = (p3mod[i-1] * 3ll)%mod;
+	}
+    scanf("%d%d ", &n, &m);
+    for (int i = 0 ; i < n ; i ++) {
+    	getline(cin, s);
+    	long long h = 0;
+    	long long hm = 0;
+    	for (int j = 0 ; j < s.length() ; j ++) {
+    		h = h * p + s[j] - 'a';
+    		hm = (1ll * hm * p + s[j] - 'a') % mod;
+    	}
+    	H.insert(h);
+    	Hmod.insert(hm);
+    }
+    for (int i = 0 ; i < m ; i ++) {
+    	getline(cin, s);
+    	long long h = 0;
+    	long long hm = 0;
+    	for (int j = 0 ; j < s.length() ; j ++) {
+    		h = h * p + s[j] - 'a';
+    		hm = (1ll * hm * p + s[j] - 'a') % mod;
+    	}
+    	int l = s.length();
+    	bool found = 0;
+    	for (int j = 0 ; j < l && !found; j++) {
+    		for (int k = 0 ; k < 3; k ++) {
+    			if (a[k] == s[j]) continue;
+    			long long nh = h - (s[j] - 'a') * p3[l-j-1] + (a[k] - 'a') * p3[l-j-1];
+    			long long nhm = (hm - 1ll * (s[j] - 'a') * p3mod[l-j-1] + 1ll * (a[k] - 'a') * p3mod[l-j-1])%mod;
+    			nhm = (nhm + mod)%mod;
+    			if (H.count(nh) > 0 && Hmod.count(nhm) > 0) {
+    				found = 1;
+    				break;
+    			}
+    		}
+    	}
+    	if (found) {
+    		puts("YES");
+    	} else {
+    		puts("NO");
+    	}
+    }
+    
+    
+    return 0;
+}

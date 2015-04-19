@@ -1,0 +1,33 @@
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+#include <algorithm>
+
+using namespace std;
+
+char str[111];
+
+int n;
+
+int main() {
+	scanf("%d ", &n);
+	scanf("%s", str);
+	for (int i = 0 ; i < n ; i++) {
+		for (int l = 1 ; i + 4 * l < n ; l ++) {
+			bool ok = 1;
+			int cnt = 0;
+			for (int k = 0 ; k < 5 ; k ++) {
+				if (str[i + k * l] == '.')
+					ok = 0;
+				else
+					cnt ++;
+			}
+			if (ok && cnt == 5) {
+				puts("yes");
+				return 0;
+			}
+		}
+	}
+	puts("no");
+	return 0;
+}
