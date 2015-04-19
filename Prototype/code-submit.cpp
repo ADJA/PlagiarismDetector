@@ -17,8 +17,8 @@
 
 using namespace std;
 
-const int K = 8;
-const int W = 9;
+const int K = 5;
+const int W = 1;
 const int p = 257;
 
 long long getHash(string &s, int pos, int len) {
@@ -38,29 +38,14 @@ map < long long, vector <int> > getFingerprints(string &s, int K, int W) {
 
 	vector <long long> hv;
 
+	map < long long, vector <int> > mp;
+
 	for (int i = 0; i < len; i++) {
 		if (i + K - 1 >= len)
 			continue;
 		long long curHash = getHash(s, i, K);
-		hv.push_back(curHash);
+		mp[curHash].push_back(i);
 	}              
-
-	map < long long, vector <int> > mp;
-
-	for (int i = 0; i < len; i++) {
-		if (i + W - 1 >= (int) hv.size())
-			continue;
-		int mn = -1;
-		for (int j = i + W - 1; j >= i; j--) {
-			if (mn == -1 || hv[j] < hv[mn])
-				mn = j;
-		}
-		
-		long long mnH = hv[mn];
-		if (!mp[mnH].empty() && mp[mnH].back() == mn)
-			continue;
-		mp[hv[mn]].push_back(mn);
-	}
 
 	return mp;
 }
@@ -70,9 +55,35 @@ string processFile(string fileName) {
 
 	string res = "";
 	string cur;
-	while (in >> cur) {
-		res += cur;
-	}              
+
+	while (getline(in, cur)) {
+		while ((int) cur.length() > 0 && cur[0] <= ' ')
+			cur = cur.substr(1);
+		if (cur.substr(0, 8) == "#include")
+			continue;
+		if (cur.substr(0, 7) == "#define")
+			continue;
+		if (cur.substr(0, 2) == "//")
+			continue;
+		if (cur.substr(0, 2) == "/*")
+			continue;
+		if (cur.substr(0, 6) == "import")
+			continue;
+		if (cur.substr(0, 5) == "using")
+			continue;
+		if (cur.substr(0, 8) == "int main")
+			continue;
+		if (cur.substr(0, 8) == "template")
+			continue;
+		for (int i = 0; i < (int) cur.length(); i++) {
+			cur[i] = tolower(cur[i]);
+			if (cur[i] == ';' || cur[i] == '{' || cur[i] == '}')
+				continue;
+			if (cur[i] <= ' ')
+				continue;
+			res.append(1, cur[i]);
+		}
+	}
 
 	in.close();
 	return res;
@@ -85,19 +96,19 @@ double process(string &text1, string &text2, int K, int W) {
 	int total = 0, match = 0;
 	
 	for (map < long long, vector <int> > :: iterator it = fp1.begin(); it != fp1.end(); it++) 
-		total += (int) it->second.size();
+		total++; //= (int) it->second.size();
 
-	for (map < long long, vector <int> > :: iterator it = fp2.begin(); it != fp2.end(); it++) 
-		total += (int) it->second.size();
+	/*for (map < long long, vector <int> > :: iterator it = fp2.begin(); it != fp2.end(); it++) 
+		total += (int) it->second.size();    */
 
 	for (map < long long, vector <int> > :: iterator it = fp1.begin(); it != fp1.end(); it++) {
 		long long h = it->first;
 		if (fp2.count(h)) 
-			match += (it->second).size() + fp2[h].size();
+			match++; //= (it->second).size() + fp2[h].size();
 	}
 
-	//cerr << "MATCHED " << match << " OUT OF " << total << endl;
-	//cerr << "PERCENTILE IS " << 1.0 * match / total << endl;
+	cerr << "MATCHED " << match << " OUT OF " << total << endl;
+	cerr << "PERCENTILE IS " << 1.0 * match / total << endl;
 
 	return 1.0 * match / total;
 }
@@ -144,10 +155,10 @@ int main(int argc, char * argv[]) {
 	}
 
 	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
+		for (int j = i + 1; j <= n; j++) {
 			if (i == j)
 				continue;
-			if (process(s[i], s[j], K, W) >= LIM)
+			if (process(s[i], s[j], K, W) + process(s[j], s[i], K, W) >= 2.0 * LIM)
 				unite(i, j);
 		}
 	}

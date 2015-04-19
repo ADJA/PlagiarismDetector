@@ -17,8 +17,8 @@
 
 using namespace std;
 
-const int K = 8;
-const int W = 9;
+const int K = 7;
+const int W = 1;
 const int p = 257;
 
 long long getHash(string &s, int pos, int len) {
@@ -71,7 +71,15 @@ string processFile(string fileName) {
 	string res = "";
 	string cur;
 	while (in >> cur) {
-		res += cur;
+		if (cur == "#include") {
+			in >> cur;
+			continue;
+		}
+		for (int i = 0; i < (int) cur.length(); i++) {
+			if (cur[i] == ';')
+				continue;
+			res.append(1, tolower(cur[i]));
+		}
 	}              
 
 	in.close();
