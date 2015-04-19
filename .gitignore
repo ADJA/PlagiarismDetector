@@ -1,0 +1,6 @@
+#archives
+*.zip
+*.rar
+
+# windows exe files
+*.exe
