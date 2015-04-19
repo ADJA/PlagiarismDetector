@@ -67,6 +67,10 @@ string processFile(string fileName) {
 			continue;
 		if (cur.substr(0, 2) == "/*")
 			continue;
+		if (cur[0] == '*')
+			continue;
+		if (cur.substr(0, 13) == "public static")
+			continue;
 		if (cur.substr(0, 6) == "import")
 			continue;
 		if (cur.substr(0, 5) == "using")
