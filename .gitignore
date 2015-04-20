@@ -4,3 +4,7 @@
 
 # windows exe files
 *.exe
+
+# IDEA files
+*.iml
+.idea
