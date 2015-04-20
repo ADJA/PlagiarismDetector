@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by nurlan on 4/20/15.
@@ -20,11 +23,13 @@ public class SourceCode {
             StringBuilder stringBuilder = new StringBuilder();
             raw = "";
             String str;
+            StringTokenizer stringTokenizer = null;
             while ((str = in.readLine()) != null) {
-                stringBuilder.append(str);
-                stringBuilder.append('\n');
+                stringTokenizer = new StringTokenizer(str);
+                while (stringTokenizer.hasMoreTokens())
+                    stringBuilder.append(stringTokenizer.nextToken());
             }
-            raw = stringBuilder.toString();
+            raw = stringBuilder.toString().toLowerCase();
             in.close();
             preprocess();
         }
@@ -47,7 +52,29 @@ public class SourceCode {
 
     // TODO: implement preprocessing
     public void preprocess() {
+        final int limit = 2;
+        int opened = 0;
+        String opening = "{", closing = "}";
+        if (fileName.endsWith(".pas")) {
+            opening = "begin";
+            closing = "end";
+        }
 
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0 ; i < raw.length() ; i++) {
+            if (i + opening.length() <= raw.length() && raw.substring(i, i + opening.length()).equals(opening)) {
+                opened ++;
+            }
+            if (i + closing.length() <= raw.length() && raw.substring(i, i + closing.length()).equals(closing)) {
+                opened --;
+            }
+            if (opened >= limit) {
+                stringBuilder.append(raw.charAt(i));
+            }
+        }
+        raw = stringBuilder.toString();
+        //System.out.println(raw);
     }
     public LinkedHashMap<Long, ArrayList<Integer> > getFingerprints(Parameters parameters) {
         int K = parameters.K;

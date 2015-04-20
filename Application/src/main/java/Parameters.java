@@ -4,7 +4,7 @@
 public class Parameters {
     int K = 5;
     int W = 1;
-    double PERCENTAGE_LIMIT = 0.65;
+    double PERCENTAGE_LIMIT = 0.58;
     int p = 257;
     public Parameters() {
 

@@ -17,4 +17,4 @@
 .idea
 
 # /target folder with binaries
-target/*
+Application/target/*
