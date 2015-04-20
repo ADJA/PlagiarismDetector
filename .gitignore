@@ -5,6 +5,10 @@
 # windows exe files
 *.exe
 
+#java binaries
+*.class
+*.jar
+
 # IDEA files
 *.iml
 .idea
