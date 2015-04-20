@@ -59,6 +59,7 @@ public class Main implements Runnable {
         for (int i = 0 ; i < ans.size() ; i++) {
             for (int j = 0 ; j < ans.get(i).size() ; j ++) {
                 String fileName = ans.get(i).get(j);
+                // output only relative to the input folder name
                 fileName = fileName.substring(pathToInputFolder.length());
                 out.print(fileName + " ");
             }

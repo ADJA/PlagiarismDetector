@@ -1,17 +1,20 @@
-#archives
+# Archives
 *.zip
 *.rar
 
-# windows exe files
+# Windows exe files
 *.exe
 
-#OS X files
+# OS X files
 *.DS_Store
 
-#java binaries
+# Java binaries
 *.class
 *.jar
 
 # IDEA files
 *.iml
 .idea
+
+# /target folder with binaries
+target/*
