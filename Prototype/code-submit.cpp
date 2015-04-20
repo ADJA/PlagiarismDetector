@@ -56,6 +56,8 @@ string processFile(string fileName) {
 	string res = "";
 	string cur;
 
+	int op = 0;
+
 	while (getline(in, cur)) {
 		while ((int) cur.length() > 0 && cur[0] <= ' ')
 			cur = cur.substr(1);
@@ -69,19 +71,26 @@ string processFile(string fileName) {
 			continue;
 		if (cur[0] == '*')
 			continue;
-		if (cur.substr(0, 13) == "public static")
-			continue;
+		/*if (cur.substr(0, 6) == "class")
+			continue;            */
+		/*if (cur.substr(0, 6) == "public")
+			continue;          */
 		if (cur.substr(0, 6) == "import")
 			continue;
 		if (cur.substr(0, 5) == "using")
 			continue;
-		if (cur.substr(0, 8) == "int main")
-			continue;
+		/*if (cur.substr(0, 8) == "int main")
+			continue;   */
 		if (cur.substr(0, 8) == "template")
-			continue;                                     
+			continue;
+		                  
 		string curWord = "";
 		for (int i = 0; i < (int) cur.length(); i++) {
 			cur[i] = tolower(cur[i]);
+			if (cur[i] == '{')
+				op++;
+			if (cur[i] == '}')
+				op--;      
 			/*if (cur[i] == ';' || cur[i] == '{' || cur[i] == '}' || cur[i] == '(' || cur[i] == ')' || cur[i] == ',')
 				continue;   */
 			if ((isalnum(cur[i]) && i > 0 && !isalnum(cur[i - 1])) || cur[i] <= ' ' || cur[i] == ';' || cur[i] == '+' || cur[i] == '=' || cur[i] == '{' 
@@ -98,10 +107,11 @@ string processFile(string fileName) {
 			    curWord = "";
 			}
 
-			if (cur[i] <= ' ' || cur[i] == ';') //|| cur[i] == '{' || cur[i] == '}' || cur[i] == '(' || cur[i] == ')')
-				continue;
+			if (cur[i] <= ' ' || cur[i] == ';' || cur[i] == '{' || cur[i] == '}' ) //|| cur[i] == '(' || cur[i] == ')')
+				continue;                                       
 
-			curWord.append(1, cur[i]);
+			if (op >= 2)
+				curWord.append(1, cur[i]);
 		}
 		res += curWord;
 	}
@@ -163,18 +173,18 @@ double getLcsPercent(string &text1, string &text2) {
 	int len1 = min( (int) text1.length(), 5000);
 	int len2 = min( (int) text2.length(), 5000);
 
-	double res = 1.0 * getLCS(text1, text2) / min(len1, len2);
+	double res = 1.0 * getLCS(text1, text2) / max(len1, len2);
 	cerr << "LCS PERCENTILE IS " << res << endl;
 
 	return res;
 }
 
 const int MAXN = 105;
-const double LIM = 0.65;
+const double LIM = 0.6;
 
 int n;
 string f[MAXN];
-string s[MAXN];
+string s[MAXN];    
 int st[MAXN];
 bool used[MAXN];
 vector < vector < string > > ansv;
@@ -206,7 +216,10 @@ int main(int argc, char * argv[]) {
 	scanf("%d\n", &n);
 	for (int i = 1; i <= n; i++) {
 		getline(cin, f[i]);
+        
         s[i] = processFile(f[i]);
+        //cout << s[i] << endl;
+
         st[i] = i;
 	}
 
@@ -214,8 +227,9 @@ int main(int argc, char * argv[]) {
 		for (int j = i + 1; j <= n; j++) {
 			if (i == j)
 				continue;
-			if (process(s[i], s[j], K, W) + process(s[j], s[i], K, W) + getLcsPercent(s[i], s[j]) >= 1.9)
-				unite(i, j);
+			if (process(s[i], s[j], K, W) + process(s[j], s[i], K, W) + getLcsPercent(s[i], s[j]) >= 2.2) {     
+					unite(i, j);
+			}
 			//int lcs = getLCS(s[i], s[j]);
 			//cerr << "LCS IS " << lcs << " LENGTHS ARE " << (int) s[i].length() << " " << (int) s[j].length() << endl;
 			//cerr << "PERCENTILE IS " << 1.0 * lcs / min(s[i].length(), s[j].length()) << endl;
