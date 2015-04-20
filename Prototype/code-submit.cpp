@@ -63,8 +63,8 @@ string processFile(string fileName) {
 			continue;
 		if (cur.substr(0, 7) == "#define")
 			continue;
-		if (cur.substr(0, 2) == "//")
-			continue;
+		//if (cur.substr(0, 2) == "//")
+		//	continue;
 		if (cur.substr(0, 2) == "/*")
 			continue;
 		if (cur[0] == '*')
@@ -78,15 +78,32 @@ string processFile(string fileName) {
 		if (cur.substr(0, 8) == "int main")
 			continue;
 		if (cur.substr(0, 8) == "template")
-			continue;
+			continue;                                     
+		string curWord = "";
 		for (int i = 0; i < (int) cur.length(); i++) {
 			cur[i] = tolower(cur[i]);
-			if (cur[i] == ';' || cur[i] == '{' || cur[i] == '}')
+			/*if (cur[i] == ';' || cur[i] == '{' || cur[i] == '}' || cur[i] == '(' || cur[i] == ')' || cur[i] == ',')
+				continue;   */
+			if ((isalnum(cur[i]) && i > 0 && !isalnum(cur[i - 1])) || cur[i] <= ' ' || cur[i] == ';' || cur[i] == '+' || cur[i] == '=' || cur[i] == '{' 
+			|| cur[i] == '}' || cur[i] == '(' || cur[i] == ')' || cur[i] == ',' || cur[i] == '[' || cur[i] == ']' || cur[i] == '/' || cur[i] == '-' || cur[i] == '%' || cur[i] == '<'
+			|| cur[i] == '>' || cur[i] == '\'' || cur[i] == '"' || cur[i] == '\\') {
+				if ((curWord[0] >= 'a' && curWord[0] <= 'z') && curWord != "struct" && curWord != "class" && curWord != "const" && curWord != "for" && curWord != "if" && curWord != "int" && curWord != "long" && curWord != "string" && curWord != "printf" &&
+					curWord != "scanf" && curWord != "double" && curWord != "char" && curWord != "while" && curWord != "cin" && curWord != "gets" && curWord != "return"
+					&& curWord != "readline" && curWord != "nextint" && curWord != "max" && curWord != "min" && curWord != "vector" && curWord != "map"
+					&& curWord != "set" && curWord != "assert" && curWord != "pair" && curWord != "boolean" && curWord != "integer" && curWord != "memset") {
+						//cout << curWord << endl;
+						curWord = "";
+					}
+			    res += curWord;
+			    curWord = "";
+			}
+
+			if (cur[i] <= ' ' || cur[i] == ';') //|| cur[i] == '{' || cur[i] == '}' || cur[i] == '(' || cur[i] == ')')
 				continue;
-			if (cur[i] <= ' ')
-				continue;
-			res.append(1, cur[i]);
+
+			curWord.append(1, cur[i]);
 		}
+		res += curWord;
 	}
 
 	in.close();
@@ -100,7 +117,7 @@ double process(string &text1, string &text2, int K, int W) {
 	int total = 0, match = 0;
 	
 	for (map < long long, vector <int> > :: iterator it = fp1.begin(); it != fp1.end(); it++) 
-		total++; //= (int) it->second.size();
+		total++;
 
 	/*for (map < long long, vector <int> > :: iterator it = fp2.begin(); it != fp2.end(); it++) 
 		total += (int) it->second.size();    */
@@ -108,13 +125,48 @@ double process(string &text1, string &text2, int K, int W) {
 	for (map < long long, vector <int> > :: iterator it = fp1.begin(); it != fp1.end(); it++) {
 		long long h = it->first;
 		if (fp2.count(h)) 
-			match++; //= (it->second).size() + fp2[h].size();
+			match ++; //= (it->second).size() + fp2[h].size();
 	}
 
 	cerr << "MATCHED " << match << " OUT OF " << total << endl;
 	cerr << "PERCENTILE IS " << 1.0 * match / total << endl;
 
 	return 1.0 * match / total;
+}
+
+int dp[5050][5050];
+
+int getLCS(string &text1, string &text2) {
+	int len1 = min( (int) text1.length(), 5000);
+	int len2 = min( (int) text2.length(), 5000);
+
+	int res = 0;
+
+	for (int i = 1; i <= len1; i++)
+		for (int j = 1; j <= len2; j++) {
+			dp[i][j] = dp[i - 1][j];
+			if (dp[i][j - 1] > dp[i][j])
+				dp[i][j] = dp[i][j - 1];
+			if (text1[i - 1] == text2[j - 1]) {
+				int cur = dp[i - 1][j - 1] + 1;
+				if (cur > dp[i][j])
+					dp[i][j] = cur;
+			}
+			if (dp[i][j] > res)
+				res = dp[i][j];
+		}
+
+	return res;
+}
+
+double getLcsPercent(string &text1, string &text2) {
+	int len1 = min( (int) text1.length(), 5000);
+	int len2 = min( (int) text2.length(), 5000);
+
+	double res = 1.0 * getLCS(text1, text2) / min(len1, len2);
+	cerr << "LCS PERCENTILE IS " << res << endl;
+
+	return res;
 }
 
 const int MAXN = 105;
@@ -150,7 +202,7 @@ int main(int argc, char * argv[]) {
 	3. For every fingerprint hash -> [index, doc]
 	4. For every doc X: for every h in X: ...
 	*/
-
+                              
 	scanf("%d\n", &n);
 	for (int i = 1; i <= n; i++) {
 		getline(cin, f[i]);
@@ -162,8 +214,11 @@ int main(int argc, char * argv[]) {
 		for (int j = i + 1; j <= n; j++) {
 			if (i == j)
 				continue;
-			if (process(s[i], s[j], K, W) + process(s[j], s[i], K, W) >= 2.0 * LIM)
+			if (process(s[i], s[j], K, W) + process(s[j], s[i], K, W) + getLcsPercent(s[i], s[j]) >= 1.9)
 				unite(i, j);
+			//int lcs = getLCS(s[i], s[j]);
+			//cerr << "LCS IS " << lcs << " LENGTHS ARE " << (int) s[i].length() << " " << (int) s[j].length() << endl;
+			//cerr << "PERCENTILE IS " << 1.0 * lcs / min(s[i].length(), s[j].length()) << endl;
 		}
 	}
 
