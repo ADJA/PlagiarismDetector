@@ -5,6 +5,9 @@
 # windows exe files
 *.exe
 
+#OS X files
+*.DS_Store
+
 #java binaries
 *.class
 *.jar
