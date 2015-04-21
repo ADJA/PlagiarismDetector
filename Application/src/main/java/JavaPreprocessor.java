@@ -8,17 +8,16 @@ import java.util.Random;
  * Date: 21.04.15
  * Time: 23:39
  */
-public class CppPreprocessor implements Preprocessor {
+public class JavaPreprocessor implements Preprocessor {
 
-    final String[] badLineBeginnings = {"#include", "#define", "//", "using", "template"};
-    final String[] keywords = {"struct", "class", "const", "for", "if", "int", "long", "string", "printf", "scanf",
-            "double", "char", "byte", "short", "while", "cin", "cout", "gets", "puts", "getline", "return", "max",
-            "min", "vector", "map", "set", "assert", "freopen", "stdin", "stdout", "pair", "bool", "memset", "queue",
-            "priority_queue", "queue", "stack", "cerr", "iterator", "void", "switch", "case", "do", "break",
-            "continue", "else", "true", "false", "float", "push_back", "make_pair", "sort", "unique", "reverse",
-            "next_permutation", "strlen", "count", "insert", "append", "length", "size", "ceil", "floor"};
+    final String[] badLineBeginnings = {"import", "//", "class"};
+    final String[] keywords = {"class", "for", "if", "int", "long", "string",
+            "double", "char", "byte", "short", "while", "return", "max",
+            "min", "assert", "boolean", "void", "switch", "case", "do", "break",
+            "continue", "else", "true", "false", "float", "arraylist", "hashmap", "treemap", "hashset", "treeset",
+            "equals", "system", "tostring", "integer", "character"};
 
-    final char badChars[] = {' ' /*, ';', '{', '}'*/ };
+    final char badChars[] = {' ', ';', '{', '}'};
 
     final String opening = "{", closing = "}";
     final int openingLimit = 2;
@@ -53,18 +52,22 @@ public class CppPreprocessor implements Preprocessor {
         return false;
     }
 
+    public char getRandomNonCodeChar() {
+        Random random = new Random();
+        return (char) (random.nextInt(5) + 'A');
+    }
+
     public String preprocess(ArrayList <String> code) {
 
         //System.out.println(code);
 
         StringBuilder raw = new StringBuilder();
-        HashMap < String, Integer > variables = new HashMap<String, Integer>();
+        HashMap< String, Integer > variables = new HashMap<String, Integer>();
         int variableNum = 0;
 
         boolean inComment = false;
         boolean inString = false;
         int opened = 0;
-        int charNum = 0;
 
         for (String line : code) {
 

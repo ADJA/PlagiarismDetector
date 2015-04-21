@@ -9,7 +9,7 @@ public class Main implements Runnable {
     /* For debug purposes let's put all input files into one folder */
 
     String pathToInputFolder = ""; // default for submission to CF
-    //String pathToInputFolder = "src/main/resources/02/"; //current
+    //String pathToInputFolder = "src/main/resources/10/"; //current
 
     int N;
     SourceCode [] sourceCodes;
@@ -77,6 +77,9 @@ public class Main implements Runnable {
                 matches ++;
             }
         }
+
+        System.out.println(l.fileName + " " + r.fileName + " " + 1.0 * matches / total);
+
         return 1.0 * matches / total;
     }
 

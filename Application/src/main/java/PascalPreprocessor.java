@@ -8,23 +8,21 @@ import java.util.Random;
  * Date: 21.04.15
  * Time: 23:39
  */
-public class CppPreprocessor implements Preprocessor {
+public class PascalPreprocessor implements Preprocessor {
 
-    final String[] badLineBeginnings = {"#include", "#define", "//", "using", "template"};
-    final String[] keywords = {"struct", "class", "const", "for", "if", "int", "long", "string", "printf", "scanf",
-            "double", "char", "byte", "short", "while", "cin", "cout", "gets", "puts", "getline", "return", "max",
-            "min", "vector", "map", "set", "assert", "freopen", "stdin", "stdout", "pair", "bool", "memset", "queue",
-            "priority_queue", "queue", "stack", "cerr", "iterator", "void", "switch", "case", "do", "break",
-            "continue", "else", "true", "false", "float", "push_back", "make_pair", "sort", "unique", "reverse",
-            "next_permutation", "strlen", "count", "insert", "append", "length", "size", "ceil", "floor"};
+    final String[] badLineBeginnings = {"program", "uses", "{"};
+    final String[] keywords = {"record", "class", "const", "for", "if", "integer", "int64", "string", "writeln", "readln",
+            "double", "char", "byte", "short", "while", "read", "write", "return", "boolean", "procedure", "function",
+            "switch", "case", "do", "break", "var", "record", "not", "repeat", "until", "div", "mod",
+            "continue", "else", "true", "false", "float", "extended", "array", "length", "inc", "dec", "float", "ceil"};
 
     final char badChars[] = {' ' /*, ';', '{', '}'*/ };
 
-    final String opening = "{", closing = "}";
+    final String opening = "begin", closing = "end";
     final int openingLimit = 2;
 
-    final String commentStart = "/*", commentEnd = "*/";
-    final char stringStart = '"', stringEnd = '"';
+    final String commentStart = "{*", commentEnd = "*}";
+    final char stringStart = '\'', stringEnd = '\'';
 
     public boolean startsBadly(String s) {
         for (String bad : badLineBeginnings)
@@ -53,6 +51,11 @@ public class CppPreprocessor implements Preprocessor {
         return false;
     }
 
+    public char getRandomNonCodeChar() {
+        Random random = new Random();
+        return (char) (random.nextInt(5) + 'A');
+    }
+
     public String preprocess(ArrayList <String> code) {
 
         //System.out.println(code);
@@ -64,7 +67,6 @@ public class CppPreprocessor implements Preprocessor {
         boolean inComment = false;
         boolean inString = false;
         int opened = 0;
-        int charNum = 0;
 
         for (String line : code) {
 

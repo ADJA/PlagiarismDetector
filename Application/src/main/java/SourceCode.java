@@ -59,12 +59,18 @@ public class SourceCode {
 
         Preprocessor preprocessor;
 
-        if (extension.equals("cpp"))
-                preprocessor = new CppPreprocessor();
+        if (extension.equals("cpp") || extension.equals("c"))
+            preprocessor = new CppPreprocessor();
+        else if (extension.equals("java"))
+            preprocessor = new JavaPreprocessor();
+        else if (extension.equals("pas") || extension.equals("dpr"))
+            preprocessor = new PascalPreprocessor();
         else
-                preprocessor = new CppPreprocessor();
+            preprocessor = new CppPreprocessor();
 
         raw = preprocessor.preprocess(code);
+        System.out.println("PREPROCESSED " + fileName);
+        System.out.println(raw);
 
     }
     public LinkedHashMap<Long, ArrayList<Integer> > getFingerprints(Parameters parameters) {
