@@ -10,26 +10,30 @@ import java.util.regex.Pattern;
  */
 public class SourceCode {
     String fileName;
+    String extension;
     String raw;
+    ArrayList <String> code;
     public SourceCode(String fileName) {
         try {
             this.fileName = fileName;
             File file = new File(fileName);
 
+            int i = fileName.lastIndexOf('.');
+            if (i > 0)
+                extension = fileName.substring(i + 1);
+            else
+                extension = "";
+
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(
                             new FileInputStream(file), "UTF8"));
 
-            StringBuilder stringBuilder = new StringBuilder();
-            raw = "";
+            code = new ArrayList<String>();
             String str;
-            StringTokenizer stringTokenizer = null;
             while ((str = in.readLine()) != null) {
-                stringTokenizer = new StringTokenizer(str);
-                while (stringTokenizer.hasMoreTokens())
-                    stringBuilder.append(stringTokenizer.nextToken());
+                code.add(str.toLowerCase());
             }
-            raw = stringBuilder.toString().toLowerCase();
+
             in.close();
             preprocess();
         }
@@ -52,29 +56,16 @@ public class SourceCode {
 
     // TODO: implement preprocessing
     public void preprocess() {
-        final int limit = 2;
-        int opened = 0;
-        String opening = "{", closing = "}";
-        if (fileName.endsWith(".pas")) {
-            opening = "begin";
-            closing = "end";
-        }
 
-        StringBuilder stringBuilder = new StringBuilder();
+        Preprocessor preprocessor;
 
-        for (int i = 0 ; i < raw.length() ; i++) {
-            if (i + opening.length() <= raw.length() && raw.substring(i, i + opening.length()).equals(opening)) {
-                opened ++;
-            }
-            if (i + closing.length() <= raw.length() && raw.substring(i, i + closing.length()).equals(closing)) {
-                opened --;
-            }
-            if (opened >= limit) {
-                stringBuilder.append(raw.charAt(i));
-            }
-        }
-        raw = stringBuilder.toString();
-        //System.out.println(raw);
+        if (extension.equals("cpp"))
+                preprocessor = new CppPreprocessor();
+        else
+                preprocessor = new CppPreprocessor();
+
+        raw = preprocessor.preprocess(code);
+
     }
     public LinkedHashMap<Long, ArrayList<Integer> > getFingerprints(Parameters parameters) {
         int K = parameters.K;

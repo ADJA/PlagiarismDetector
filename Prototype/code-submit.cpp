@@ -83,7 +83,7 @@ string processFile(string fileName) {
 			continue;   */
 		if (cur.substr(0, 8) == "template")
 			continue;
-		                  
+
 		string curWord = "";
 		for (int i = 0; i < (int) cur.length(); i++) {
 			cur[i] = tolower(cur[i]);
