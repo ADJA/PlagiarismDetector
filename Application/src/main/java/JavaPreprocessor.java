@@ -17,7 +17,7 @@ public class JavaPreprocessor implements Preprocessor {
             "continue", "else", "true", "false", "float", "arraylist", "hashmap", "treemap", "hashset", "treeset",
             "equals", "system", "tostring", "integer", "character", "new"};
 
-    final char badChars[] = {' ', ';', '{', '}'};
+    final char badChars[] = {' ', /*';', '{', '}'**/};
 
     final String opening = "{", closing = "}";
     final int openingLimit = 2;
@@ -138,7 +138,7 @@ public class JavaPreprocessor implements Preprocessor {
                             long hash = 0;
                             long pp = 1L;
                             int curLen = raw.length();
-                            for (int j = 0; j < Math.min(20, curLen); j++) {
+                            for (int j = 0; j < Math.min(10, curLen); j++) {
                                 hash = (hash + (long) (raw.charAt(curLen - 1 - j)) * pp) % mod;
                                 while (hash < 0)
                                     hash += mod;
