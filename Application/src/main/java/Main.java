@@ -9,7 +9,7 @@ public class Main implements Runnable {
     /* For debug purposes let's put all input files into one folder */
 
     String pathToInputFolder = ""; // default for submission to CF
-    //String pathToInputFolder = "src/main/resources/10/"; //current
+    //String pathToInputFolder = "src/main/resources/08/"; //current
 
     int N;
     SourceCode [] sourceCodes;

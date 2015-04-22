@@ -15,7 +15,7 @@ public class JavaPreprocessor implements Preprocessor {
             "double", "char", "byte", "short", "while", "return", "max",
             "min", "assert", "boolean", "void", "switch", "case", "do", "break",
             "continue", "else", "true", "false", "float", "arraylist", "hashmap", "treemap", "hashset", "treeset",
-            "equals", "system", "tostring", "integer", "character"};
+            "equals", "system", "tostring", "integer", "character", "new"};
 
     final char badChars[] = {' ', ';', '{', '}'};
 
@@ -24,6 +24,9 @@ public class JavaPreprocessor implements Preprocessor {
 
     final String commentStart = "/*", commentEnd = "*/";
     final char stringStart = '"', stringEnd = '"';
+
+    final int p = 257;
+    final int mod = 10000000;
 
     public boolean startsBadly(String s) {
         for (String bad : badLineBeginnings)
@@ -62,7 +65,8 @@ public class JavaPreprocessor implements Preprocessor {
         //System.out.println(code);
 
         StringBuilder raw = new StringBuilder();
-        HashMap< String, Integer > variables = new HashMap<String, Integer>();
+        ArrayList <String> variables = new ArrayList<String>();
+        ArrayList <Integer> variablePositions = new ArrayList<Integer>();
         int variableNum = 0;
 
         boolean inComment = false;
@@ -127,9 +131,24 @@ public class JavaPreprocessor implements Preprocessor {
                     String word = curWord.toString();
                     if (word.length() != 0) {
                         //System.out.println(word);
-                        //if (!Character.isDigit(word.charAt(0)) && (!Character.isAlphabetic(word.charAt(0))) || isKeyword(word)) {
+                        if (!Character.isDigit(word.charAt(0)) && (!Character.isAlphabetic(word.charAt(0))) || isKeyword(word)) {
                             raw.append(word);
-                        //}
+                        }
+                        else {
+                            long hash = 0;
+                            long pp = 1L;
+                            int curLen = raw.length();
+                            for (int j = 0; j < Math.min(20, curLen); j++) {
+                                hash = (hash + (long) (raw.charAt(curLen - 1 - j)) * pp) % mod;
+                                while (hash < 0)
+                                    hash += mod;
+                                pp *= 1L * p;
+                            }
+                            word = Long.toString(hash);
+                            variables.add(word);
+                            variablePositions.add(raw.length());
+                            //raw.append(word);
+                        }
                     }
                     curWord.setLength(0);
                 }
@@ -146,6 +165,22 @@ public class JavaPreprocessor implements Preprocessor {
         }
 
         //System.out.println(raw.toString());
-        return raw.toString();
+        StringBuilder rawString = new StringBuilder();
+
+        System.out.println(variables.size());
+        System.out.println(variables);
+        System.out.println(variablePositions);
+
+        int pos = 0;
+        for (int i = 0; i <= raw.length(); i++) {
+            while (pos < variablePositions.size() && i == variablePositions.get(pos)) {
+                rawString.append(variables.get(pos));
+                pos++;
+            }
+            if (i < raw.length())
+                rawString.append(raw.charAt(i));
+        }
+
+        return rawString.toString();
     }
 }

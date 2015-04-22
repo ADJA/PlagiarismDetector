@@ -24,6 +24,9 @@ public class PascalPreprocessor implements Preprocessor {
     final String commentStart = "{*", commentEnd = "*}";
     final char stringStart = '\'', stringEnd = '\'';
 
+    final int p = 257;
+    final int mod = 10000000;
+
     public boolean startsBadly(String s) {
         for (String bad : badLineBeginnings)
             if (s.startsWith(bad))
@@ -61,7 +64,8 @@ public class PascalPreprocessor implements Preprocessor {
         //System.out.println(code);
 
         StringBuilder raw = new StringBuilder();
-        HashMap < String, Integer > variables = new HashMap<String, Integer>();
+        ArrayList <String> variables = new ArrayList<String>();
+        ArrayList <Integer> variablePositions = new ArrayList<Integer>();
         int variableNum = 0;
 
         boolean inComment = false;
@@ -126,9 +130,24 @@ public class PascalPreprocessor implements Preprocessor {
                     String word = curWord.toString();
                     if (word.length() != 0) {
                         //System.out.println(word);
-                        //if (!Character.isDigit(word.charAt(0)) && (!Character.isAlphabetic(word.charAt(0))) || isKeyword(word)) {
+                        if (!Character.isDigit(word.charAt(0)) && (!Character.isAlphabetic(word.charAt(0))) || isKeyword(word)) {
                             raw.append(word);
-                        //}
+                        }
+                        else {
+                            long hash = 0;
+                            long pp = 1L;
+                            int curLen = raw.length();
+                            for (int j = 0; j < Math.min(5, curLen); j++) {
+                                hash = (hash + (long) (raw.charAt(curLen - 1 - j)) * pp) % mod;
+                                while (hash < 0)
+                                    hash += mod;
+                                pp *= 1L * p;
+                            }
+                            word = Long.toString(hash);
+                            variables.add(word);
+                            variablePositions.add(raw.length());
+                            //raw.append(word);
+                        }
                     }
                     curWord.setLength(0);
                 }
@@ -145,6 +164,22 @@ public class PascalPreprocessor implements Preprocessor {
         }
 
         //System.out.println(raw.toString());
-        return raw.toString();
+        StringBuilder rawString = new StringBuilder();
+
+        System.out.println(variables.size());
+        System.out.println(variables);
+        System.out.println(variablePositions);
+
+        int pos = 0;
+        for (int i = 0; i <= raw.length(); i++) {
+            while (pos < variablePositions.size() && i == variablePositions.get(pos)) {
+                rawString.append(variables.get(pos));
+                pos++;
+            }
+            if (i < raw.length())
+                rawString.append(raw.charAt(i));
+        }
+
+        return rawString.toString();
     }
 }
