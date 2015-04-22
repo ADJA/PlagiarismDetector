@@ -58,7 +58,7 @@ public class CppPreprocessor implements Preprocessor {
         return false;
     }
 
-    public String preprocess(ArrayList <String> code) {
+    public String preprocess(ArrayList <String> code, boolean keepVariables) {
 
         //System.out.println(code);
 
@@ -135,16 +135,19 @@ public class CppPreprocessor implements Preprocessor {
                             raw.append(word);
                         }
                         else {
-                            long hash = 0;
-                            long pp = 1L;
-                            int curLen = raw.length();
-                            for (int j = 0; j < Math.min(5, curLen); j++) {
-                                hash = (hash + (long) (raw.charAt(curLen - 1 - j)) * pp) % mod;
-                                while (hash < 0)
-                                    hash += mod;
-                                pp *= 1L * p;
+                            if (!keepVariables) {
+                                long hash = 0;
+                                long pp = 1L;
+                                int curLen = raw.length();
+                                for (int j = 0; j < Math.min(5, curLen); j++) {
+                                    hash = (hash + (long) (raw.charAt(curLen - 1 - j)) * pp) % mod;
+                                    while (hash < 0)
+                                        hash += mod;
+                                    pp *= 1L * p;
+                                }
+
+                                word = Long.toString(hash);
                             }
-                            word = Long.toString(hash);
                             variables.add(word);
                             variablePositions.add(raw.length());
                             //raw.append(word);

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class SourceCode {
     String fileName;
     String extension;
-    String raw;
+    String raw, rawKeepVariables;
     ArrayList <String> code;
     public SourceCode(String fileName) {
         try {
@@ -35,6 +35,7 @@ public class SourceCode {
             }
 
             in.close();
+
             preprocess();
         }
         catch (UnsupportedEncodingException e)
@@ -54,7 +55,6 @@ public class SourceCode {
         }
     }
 
-    // TODO: implement preprocessing
     public void preprocess() {
 
         Preprocessor preprocessor;
@@ -68,12 +68,14 @@ public class SourceCode {
         else
             preprocessor = new CppPreprocessor();
 
-        raw = preprocessor.preprocess(code);
+        raw = preprocessor.preprocess(code, false);
+        rawKeepVariables = preprocessor.preprocess(code, true);
         System.out.println("PREPROCESSED " + fileName);
         System.out.println(raw);
 
     }
-    public LinkedHashMap<Long, ArrayList<Integer> > getFingerprints(Parameters parameters) {
+
+    public LinkedHashMap<Long, ArrayList<Integer> > getFingerprints(String raw, Parameters parameters) {
         int K = parameters.K;
         LinkedHashMap<Long, ArrayList<Integer> > map = new LinkedHashMap<Long, ArrayList<Integer>>();
 

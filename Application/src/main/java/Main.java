@@ -32,6 +32,13 @@ public class Main implements Runnable {
                 {
                     dsu.unite(i, j);
                 }
+
+                if (processKeepingVariables(sourceCodes[i], sourceCodes[j], parameters) + processKeepingVariables(sourceCodes[j], sourceCodes[i], parameters)
+                        >= 2.0 * parameters.PERCENTAGE_LIMIT)
+                {
+                    dsu.unite(i, j);
+                }
+
             }
         }
         ArrayList<ArrayList<String> > ans = new ArrayList<ArrayList<String>>();
@@ -68,8 +75,24 @@ public class Main implements Runnable {
     }
 
     public double process(SourceCode l, SourceCode r, Parameters parameters) {
-        LinkedHashMap<Long, ArrayList<Integer>> lMap = l.getFingerprints(parameters);
-        LinkedHashMap<Long, ArrayList<Integer>> rMap = r.getFingerprints(parameters);
+        LinkedHashMap<Long, ArrayList<Integer>> lMap = l.getFingerprints(l.raw, parameters);
+        LinkedHashMap<Long, ArrayList<Integer>> rMap = r.getFingerprints(r.raw, parameters);
+        int total = lMap.size();
+        int matches = 0;
+        for (Map.Entry<Long, ArrayList<Integer> > entry : lMap.entrySet()) {
+            if (rMap.containsKey(entry.getKey())) {
+                matches ++;
+            }
+        }
+
+        System.out.println(l.fileName + " " + r.fileName + " " + 1.0 * matches / total);
+
+        return 1.0 * matches / total;
+    }
+
+    public double processKeepingVariables(SourceCode l, SourceCode r, Parameters parameters) {
+        LinkedHashMap<Long, ArrayList<Integer>> lMap = l.getFingerprints(l.rawKeepVariables, parameters);
+        LinkedHashMap<Long, ArrayList<Integer>> rMap = r.getFingerprints(r.rawKeepVariables, parameters);
         int total = lMap.size();
         int matches = 0;
         for (Map.Entry<Long, ArrayList<Integer> > entry : lMap.entrySet()) {
