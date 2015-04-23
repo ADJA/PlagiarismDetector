@@ -59,14 +59,16 @@ public class SourceCode {
 
         Preprocessor preprocessor;
 
-        if (extension.equals("cpp") || extension.equals("c"))
+        if (extension.equals("cpp") || extension.equals("c") || extension.equals("d"))
             preprocessor = new CppPreprocessor();
-        else if (extension.equals("java"))
+        else if (extension.equals("java") || extension.equals("cs"))
             preprocessor = new JavaPreprocessor();
         else if (extension.equals("pas") || extension.equals("dpr"))
             preprocessor = new PascalPreprocessor();
+        else if (extension.equals("py"))
+            preprocessor = new PythonPreprocessor();
         else
-            preprocessor = new CppPreprocessor();
+            preprocessor = new DefaultPreprocessor();
 
         raw = preprocessor.preprocess(code, false);
         rawKeepVariables = preprocessor.preprocess(code, true);
