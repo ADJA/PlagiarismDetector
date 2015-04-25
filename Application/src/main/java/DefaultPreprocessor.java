@@ -13,7 +13,7 @@ public class DefaultPreprocessor implements Preprocessor {
     final int p = 257;
     final int mod = 10000000;
 
-    public String preprocess(ArrayList <String> code, boolean keepVariables) {
+    public String preprocess(ArrayList <String> code, boolean keepVariables, boolean useLimitingBracketDepth) {
 
         //System.out.println(code);
 

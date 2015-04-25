@@ -7,6 +7,6 @@ import java.util.ArrayList;
  */
 public interface Preprocessor {
 
-    public String preprocess(ArrayList <String> code, boolean keepVariables);
+    public String preprocess(ArrayList <String> code, boolean keepVariables, boolean useLimitingBracketDepth);
 
 }

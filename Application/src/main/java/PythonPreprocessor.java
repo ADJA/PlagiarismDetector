@@ -61,7 +61,7 @@ public class PythonPreprocessor implements Preprocessor {
         return (char) (random.nextInt(5) + 'A');
     }
 
-    public String preprocess(ArrayList <String> code, boolean keepVariables) {
+    public String preprocess(ArrayList <String> code, boolean keepVariables, boolean useLimitingBracketDepth) {
 
         //System.out.println(code);
 
@@ -178,7 +178,7 @@ public class PythonPreprocessor implements Preprocessor {
                     curWord.setLength(0);
                 }
 
-                if (curTab < openingLimit)
+                if (useLimitingBracketDepth && curTab < openingLimit)
                     continue;
 
                 if (isBadChar(curChar))

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class SourceCode {
     String fileName;
     String extension;
-    String raw, rawKeepVariables;
+    String raw, rawKeepVariables, rawNoBracketLimit;
     ArrayList <String> code;
     public SourceCode(String fileName) {
         try {
@@ -70,8 +70,9 @@ public class SourceCode {
         else
             preprocessor = new DefaultPreprocessor();
 
-        raw = preprocessor.preprocess(code, false);
-        rawKeepVariables = preprocessor.preprocess(code, true);
+        raw = preprocessor.preprocess(code, false, true);
+        rawKeepVariables = preprocessor.preprocess(code, true, true);
+        rawNoBracketLimit = preprocessor.preprocess(code, true, false);
         System.out.println("PREPROCESSED " + fileName);
         System.out.println(raw);
 

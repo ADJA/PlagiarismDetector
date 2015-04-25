@@ -27,14 +27,21 @@ public class Main implements Runnable {
         for (int i = 0; i < N; i++) {
             for (int j = i + 1; j < N; j++) {
 
-                if (process(sourceCodes[i], sourceCodes[j], parameters) + process(sourceCodes[j], sourceCodes[i], parameters)
-                        >= 2.0 * parameters.PERCENTAGE_LIMIT)
+                double score = process(sourceCodes[i], sourceCodes[j], parameters) + process(sourceCodes[j], sourceCodes[i], parameters);
+                double scoreKeepingVariables = processKeepingVariables(sourceCodes[i], sourceCodes[j], parameters) + processKeepingVariables(sourceCodes[j], sourceCodes[i], parameters);
+                double scoreWithoutBracketLimit = processWithoutBracketLimit(sourceCodes[i], sourceCodes[j], parameters) + processWithoutBracketLimit(sourceCodes[j], sourceCodes[i], parameters);
+
+                if (score >= 2.0 * parameters.PERCENTAGE_LIMIT)
                 {
                     dsu.unite(i, j);
                 }
 
-                if (processKeepingVariables(sourceCodes[i], sourceCodes[j], parameters) + processKeepingVariables(sourceCodes[j], sourceCodes[i], parameters)
-                        >= 2.0 * parameters.PERCENTAGE_LIMIT)
+                if (scoreKeepingVariables >= 2.0 * parameters.PERCENTAGE_LIMIT)
+                {
+                    dsu.unite(i, j);
+                }
+
+                if ((sourceCodes[i].raw.length() < 10 || sourceCodes[j].raw.length() < 10) && scoreWithoutBracketLimit >= 2.0 * 0.70)
                 {
                     dsu.unite(i, j);
                 }
@@ -93,6 +100,22 @@ public class Main implements Runnable {
     public double processKeepingVariables(SourceCode l, SourceCode r, Parameters parameters) {
         LinkedHashMap<Long, ArrayList<Integer>> lMap = l.getFingerprints(l.rawKeepVariables, parameters);
         LinkedHashMap<Long, ArrayList<Integer>> rMap = r.getFingerprints(r.rawKeepVariables, parameters);
+        int total = lMap.size();
+        int matches = 0;
+        for (Map.Entry<Long, ArrayList<Integer> > entry : lMap.entrySet()) {
+            if (rMap.containsKey(entry.getKey())) {
+                matches ++;
+            }
+        }
+
+        System.out.println(l.fileName + " " + r.fileName + " " + 1.0 * matches / total);
+
+        return 1.0 * matches / total;
+    }
+
+    public double processWithoutBracketLimit(SourceCode l, SourceCode r, Parameters parameters) {
+        LinkedHashMap<Long, ArrayList<Integer>> lMap = l.getFingerprints(l.rawNoBracketLimit, parameters);
+        LinkedHashMap<Long, ArrayList<Integer>> rMap = r.getFingerprints(r.rawNoBracketLimit, parameters);
         int total = lMap.size();
         int matches = 0;
         for (Map.Entry<Long, ArrayList<Integer> > entry : lMap.entrySet()) {
