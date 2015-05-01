@@ -5,6 +5,8 @@ public class Parameters {
     int K = 5;
     int W = 1;
     double PERCENTAGE_LIMIT = 0.58;
+    double PERCENTAGE_LIMIT_HIGH = 0.70;
+    int minSourceCodeLength = 10;
     int p = 257;
     public Parameters() {
 

@@ -8,7 +8,7 @@ public class Main implements Runnable {
 
     /* For debug purposes let's put all input files into one folder */
 
-    String pathToInputFolder = ""; // default for submission to CF
+    String pathToInputFolder = "src/main/resources/input/"; // default for submission to CF
     //String pathToInputFolder = "src/main/resources/mock/"; //current
 
     int N;
@@ -41,7 +41,8 @@ public class Main implements Runnable {
                     dsu.unite(i, j);
                 }
 
-                if ((sourceCodes[i].raw.length() < 10 || sourceCodes[j].raw.length() < 10) && scoreWithoutBracketLimit >= 2.0 * 0.70)
+                if ((sourceCodes[i].raw.length() < parameters.minSourceCodeLength || sourceCodes[j].raw.length() < parameters.minSourceCodeLength)
+                        && scoreWithoutBracketLimit >= 2.0 * parameters.PERCENTAGE_LIMIT_HIGH)
                 {
                     dsu.unite(i, j);
                 }
